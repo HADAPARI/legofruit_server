@@ -1,8 +1,11 @@
 package mg.legofruit.server.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
+import mg.legofruit.server.dto.AuthenticationDTO;
 import mg.legofruit.server.dto.RegisterDTO;
 import mg.legofruit.server.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -24,4 +27,22 @@ public class UserController {
 
         userService.signup(registerDTO);
     }
+
+    @PostMapping("/signin")
+    public void signIn(@Valid @RequestBody AuthenticationDTO authenticationDTO, BindingResult bindingResult, HttpServletResponse response) {
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException("Invalid data: login");
+        }
+
+        String token = userService.signin(authenticationDTO);
+
+        Cookie cookie = new Cookie("at", token);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(86400); // en secondes (1 jour)
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+    }
+
 }

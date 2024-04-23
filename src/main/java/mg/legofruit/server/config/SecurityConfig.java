@@ -1,10 +1,12 @@
 package mg.legofruit.server.config;
 
 import lombok.AllArgsConstructor;
+import mg.legofruit.server.security.CustomAuthenticationManager;
 import mg.legofruit.server.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) ->
                         auth
                                 .requestMatchers("/initialize").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/user/signup").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/user/signup","/user/signin").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();
@@ -53,4 +55,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+        return new CustomAuthenticationManager(userDetailsService, passwordEncoder());
+    }
 }

@@ -2,11 +2,15 @@ package mg.legofruit.server.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mg.legofruit.server.dto.AuthenticationDTO;
 import mg.legofruit.server.dto.RegisterDTO;
 import mg.legofruit.server.entity.Users;
 import mg.legofruit.server.mapper.RegisterDTOMapper;
 import mg.legofruit.server.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +25,7 @@ public class UserService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private MailService mailService;
     private JWTService jwtService;
+    private AuthenticationManager authenticationManager;
 
     public void signup(RegisterDTO registerDTO) {
         Optional<Users> userOptional = userRepository.findByEmail(registerDTO.getEmail());
@@ -42,4 +47,13 @@ public class UserService {
 
         mailService.send(user.getEmail(), subject, body);
     }
+
+    public String signin(AuthenticationDTO authenticationDTO) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authenticationDTO.getEmail(), authenticationDTO.getPassword())
+        );
+
+        return jwtService.generate(authenticationDTO.getEmail(), 24);
+    }
+
 }
