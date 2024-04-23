@@ -14,4 +14,8 @@ public class CountryService {
     public void add(Country country){
         countryRepository.save(country);
     }
+
+    public Country findByName(String name){
+        return countryRepository.findByName(name);
+    }
 }

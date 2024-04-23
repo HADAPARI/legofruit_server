@@ -2,19 +2,20 @@ package mg.legofruit.server.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserSignUpDTO {
+public class RegisterDTO {
     @NotBlank
     @Size(min = 3, max = 100)
-    private String firstName;
+    private String firstname;
     @NotBlank
     @Size(min = 3, max = 100)
-    private String lastName;
+    private String lastname;
     @Email
     private String email;
     @NotBlank
@@ -25,10 +26,12 @@ public class UserSignUpDTO {
     @NotBlank
     @Size(min = 3, max = 255)
     private String address;
-    @NotBlank
+    @NotNull
     private Integer region;
-    @NotBlank
+    @NotNull
     private Integer country;
+    @NotNull
+    private Integer role;
     @NotBlank
     @Size(min = 6, max = 100)
     private String password;

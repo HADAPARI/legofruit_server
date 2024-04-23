@@ -10,14 +10,15 @@ import java.util.function.Function;
 public class UserDTOMapper implements Function<Users, UserDTO> {
     @Override
     public UserDTO apply(Users user) {
-        return new UserDTO(user.getFirstName(),
-                user.getLastName(),
+        return new UserDTO(user.getFirstname(),
+                user.getLastname(),
                 user.getEmail(),
                 user.getAvatar(),
                 user.getPhone(),
                 user.getAddress(),
                 user.getRegion().getName(),
-                user.getCountry().getName()
+                user.getCountry().getName(),
+                user.getRole().getType().name()
         );
     }
 }

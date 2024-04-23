@@ -2,7 +2,12 @@ package mg.legofruit.server.controller;
 
 import lombok.AllArgsConstructor;
 import mg.legofruit.server.entity.Country;
+import mg.legofruit.server.entity.Region;
+import mg.legofruit.server.entity.Role;
+import mg.legofruit.server.enums.RoleType;
 import mg.legofruit.server.service.CountryService;
+import mg.legofruit.server.service.RegionService;
+import mg.legofruit.server.service.RoleService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 public class MainController {
     private final CountryService countryService;
+    private final RegionService regionService;
+    private final RoleService roleService;
 
     @GetMapping("/initialize")
     public void initialize() {
@@ -35,6 +42,28 @@ public class MainController {
             Country country = new Country();
             country.setName(p);
             countryService.add(country);
+        }
+
+        List<String> regionsAlbanie = Arrays.asList(
+                "Berat", "Dibër", "Durrës", "Elbasan", "Fier", "Gjirokastër",
+                "Korçë", "Kukës", "Lezhë", "Shkodër", "Tiranë", "Vlorë"
+        );
+        Collections.sort(regionsAlbanie);
+
+        for (String r : regionsAlbanie) {
+            Region region = new Region();
+            region.setName(r);
+            region.setCountry(countryService.findByName("Albanie"));
+            regionService.add(region);
+        }
+
+        RoleType[] roles = RoleType.values();
+        Arrays.sort(roles);
+
+        for (RoleType roleType : roles){
+            Role role = new Role();
+            role.setType(roleType);
+            roleService.add(role);
         }
     }
 }

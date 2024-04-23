@@ -1,33 +1,45 @@
 package mg.legofruit.server.service;
 
 import lombok.AllArgsConstructor;
-import mg.legofruit.server.dto.UserSignUpDTO;
+import lombok.extern.slf4j.Slf4j;
+import mg.legofruit.server.dto.RegisterDTO;
 import mg.legofruit.server.entity.Users;
-import mg.legofruit.server.mapper.UserSignUpDTOMapper;
+import mg.legofruit.server.mapper.RegisterDTOMapper;
 import mg.legofruit.server.repository.UserRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserService {
-    private final UserRepository userRepository;
-    private final UserSignUpDTOMapper userSignUpDTOMapper;
+    private UserRepository userRepository;
+    private RegisterDTOMapper registerDTOMapper;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private MailService mailService;
+    private JWTService jwtService;
 
-    public void signup(UserSignUpDTO userSignUpDTO){
-        Optional<Users> userOptional = userRepository.findByEmail(userSignUpDTO.getEmail());
+    public void signup(RegisterDTO registerDTO) {
+        Optional<Users> userOptional = userRepository.findByEmail(registerDTO.getEmail());
         if (userOptional.isPresent()) {
-            throw new UsernameNotFoundException("User not found with email: " + userSignUpDTO.getEmail());
+            throw new DataIntegrityViolationException("Invalid data: register");
         }
 
-        Users user = userSignUpDTOMapper.apply(userSignUpDTO);
+        Users user = registerDTOMapper.apply(registerDTO);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
+        String token = jwtService.generate(user.getId(), 24);
+
+        String subject = "Activation de votre compte Legofruit";
+        String activationLink = "http://localhost:5173/account/activation/" + token;
+        String body = String.format("Bonjour %s, <br/> Veillez cliquer sur ce lien pour activer votre compte: %s. A bientot !",
+                user.getFirstname(), activationLink);
+
+
+        mailService.send(user.getEmail(), subject, body);
     }
 }

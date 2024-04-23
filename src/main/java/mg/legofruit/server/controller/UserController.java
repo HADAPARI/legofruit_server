@@ -2,19 +2,26 @@ package mg.legofruit.server.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
-import lombok.extern.slf4j.Slf4j;
-import mg.legofruit.server.dto.UserSignUpDTO;
+import lombok.AllArgsConstructor;
+import mg.legofruit.server.dto.RegisterDTO;
+import mg.legofruit.server.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RestController
 @RequestMapping("/user")
+@AllArgsConstructor
 public class UserController {
+    private final UserService userService;
 
-    @GetMapping("/signup")
-    public void signUp() {
-        log.info("hereeeeeeeeee");
+    @PostMapping("/signup")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void signUp(@Valid @RequestBody RegisterDTO registerDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException("Invalid data: register");
+        }
 
+        userService.signup(registerDTO);
     }
 }
