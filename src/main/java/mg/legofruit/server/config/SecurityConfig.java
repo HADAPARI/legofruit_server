@@ -27,7 +27,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((auth) ->
                         auth
-                                .requestMatchers("/initialize").permitAll()
+                                .requestMatchers("/initialize","/country","/region/*","/user/activate/*").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/user/signup").permitAll()
                                 .anyRequest().authenticated()
                 );

@@ -24,4 +24,9 @@ public class UserController {
 
         userService.signup(registerDTO);
     }
+
+    @GetMapping("activate/{token}")
+    public void activate(@PathVariable String token) {
+        userService.activate(token);
+    }
 }
