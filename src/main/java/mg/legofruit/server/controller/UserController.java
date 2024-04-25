@@ -45,4 +45,8 @@ public class UserController {
         response.addCookie(cookie);
     }
 
+    @GetMapping("activate/{token}")
+    public void activate(@PathVariable String token) {
+        userService.activate(token);
+    }
 }

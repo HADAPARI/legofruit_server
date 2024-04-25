@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legofruit</title>
+</head>
+
+<body
+    style="display: flex; justify-content: center; color: black; font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; font-size: large;">
+    <div
+        style="border: solid .05rem gray; border-radius: .2rem; border-start-start-radius: 0; border-start-end-radius: 0; padding: 4rem; border-top: solid .1rem #f97316;">
+        <h2 style="color: #16a34a; text-align: center;">VOUS N'ÊTES QU'À UN CLIC !</h2>
+        <p style=" text-align: center;">Bonjour {{firstname}}!</p>
+        <p style="width: 40rem; text-align: center;">Merci de vous être inscrit à Legofruit ! Pour terminer l'inscription,
+            il suffit de confirmer que nous avons bien reçu votre adresse e-mail.
+        </p>
+        <p style="text-align: center;padding-bottom: 20px; padding-top: 50px;">Pour confirmer votre adresse e-mail, cliquez sur le bouton ci-dessous.</p>
+        <a href="http://localhost:5173/account/activation/{{token}}"
+            style="text-decoration: none;padding: 15px 20px;background-color: #4c1d95;color: white;border-radius: .2rem; margin-left: 32%;"
+            class="btn">Confirmer l'adresse e-mail</a>
+    </div>
+</body>
+
+</html>

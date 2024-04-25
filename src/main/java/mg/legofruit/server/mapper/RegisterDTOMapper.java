@@ -2,6 +2,7 @@ package mg.legofruit.server.mapper;
 
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mg.legofruit.server.dto.RegisterDTO;
 import mg.legofruit.server.entity.Country;
 import mg.legofruit.server.entity.Region;
@@ -34,7 +35,7 @@ public class RegisterDTOMapper implements Function<RegisterDTO, Users> {
         Region region = regionRepository.findById(registerDTO.getRegion()).orElseThrow(() -> new ValidationException("Invalid Data: region"));
         user.setRegion(region);
 
-        Country country = countryRepository.findById(registerDTO.getRegion()).orElseThrow(() -> new ValidationException("Invalid Data: country"));
+        Country country = countryRepository.findById(registerDTO.getCountry()).orElseThrow(() -> new ValidationException("Invalid Data: country"));
         user.setCountry(country);
 
         Role role = roleRepository.findById(registerDTO.getRole()).orElseThrow(() -> new ValidationException("Invalid Data: role"));

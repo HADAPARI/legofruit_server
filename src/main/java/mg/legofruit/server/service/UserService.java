@@ -7,13 +7,20 @@ import mg.legofruit.server.dto.RegisterDTO;
 import mg.legofruit.server.entity.Users;
 import mg.legofruit.server.mapper.RegisterDTOMapper;
 import mg.legofruit.server.repository.UserRepository;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Service
@@ -26,6 +33,7 @@ public class UserService {
     private MailService mailService;
     private JWTService jwtService;
     private AuthenticationManager authenticationManager;
+    private ResourceLoader resourceLoader;
 
     public void signup(RegisterDTO registerDTO) {
         Optional<Users> userOptional = userRepository.findByEmail(registerDTO.getEmail());
@@ -39,13 +47,39 @@ public class UserService {
 
         String token = jwtService.generate(user.getId(), 24);
 
-        String subject = "Activation de votre compte Legofruit";
-        String activationLink = "http://localhost:5173/account/activation/" + token;
-        String body = String.format("Bonjour %s, <br/> Veillez cliquer sur ce lien pour activer votre compte: %s. A bientot !",
-                user.getFirstname(), activationLink);
+        String subject = "Activation compte Legofruit";
 
+        Resource resource = resourceLoader.getResource("classpath:templates/activation.html");
+        String htmlTemplate = "";
+        try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
+            htmlTemplate = FileCopyUtils.copyToString(reader);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        mailService.send(user.getEmail(), subject, body);
+        htmlTemplate = htmlTemplate.replace("{{firstname}}", StringUtils.hasText(user.getFirstname()) ? user.getFirstname() : "");
+        htmlTemplate = htmlTemplate.replace("{{token}}", StringUtils.hasText(token) ? token : "");
+
+        mailService.send(user.getEmail(), htmlTemplate , subject);
+    }
+
+    public void activate(String token) {
+        boolean isValidToken = jwtService.verify(token);
+
+        if (!isValidToken) {
+            throw new DataIntegrityViolationException("Invalid Link");
+        }
+
+        String userId = jwtService.decode(token);
+
+        Optional<Users> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new DataIntegrityViolationException("Invalid link");
+        }
+
+        Users user = userOptional.get();
+        user.setActive(true);
+        userRepository.save(user);
     }
 
     public String signin(AuthenticationDTO authenticationDTO) {
