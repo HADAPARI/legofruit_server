@@ -15,5 +15,4 @@ public class UserDTO {
     private String region;
     private String country;
     private String role;
-
 }

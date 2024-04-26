@@ -31,6 +31,7 @@ public class SecurityConfig {
                         auth
                                 .requestMatchers("/initialize","/country","/region/*","/user/activate/*").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/user/signup","/user/signin").permitAll()
+                                .requestMatchers(HttpMethod.PUT,"/user/update/*").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();

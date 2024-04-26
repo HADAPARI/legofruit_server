@@ -3,9 +3,13 @@ package mg.legofruit.server.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mg.legofruit.server.dto.AuthenticationDTO;
+import mg.legofruit.server.dto.EditeUserDTO;
 import mg.legofruit.server.dto.RegisterDTO;
 import mg.legofruit.server.entity.Users;
 import mg.legofruit.server.mapper.RegisterDTOMapper;
+import mg.legofruit.server.repository.CountryRepository;
+import mg.legofruit.server.repository.EditeUserRepository;
+import mg.legofruit.server.repository.RegionRepository;
 import mg.legofruit.server.repository.UserRepository;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -13,6 +17,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
@@ -34,6 +39,9 @@ public class UserService {
     private JWTService jwtService;
     private AuthenticationManager authenticationManager;
     private ResourceLoader resourceLoader;
+    private EditeUserRepository editeUserRepository;
+    private RegionRepository regionRepository;
+    private CountryRepository countryRepository;
 
     public void signup(RegisterDTO registerDTO) {
         Optional<Users> userOptional = userRepository.findByEmail(registerDTO.getEmail());
@@ -89,5 +97,32 @@ public class UserService {
 
         return jwtService.generate(authenticationDTO.getEmail(), 24);
     }
+
+    public Users updateUser(String id, EditeUserDTO editeUserDTO){
+        System.out.println("Updating user with ID: " + id);
+
+
+        Users userEdite = editeUserRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable avec l’identifiant: " + id));
+
+        System.out.println("Found user: " + userEdite);
+
+
+        System.out.println("New user data: " + editeUserDTO);
+
+        userEdite.setFirstname(editeUserDTO.getFirstname());
+        userEdite.setLastname(editeUserDTO.getLastname());
+        userEdite.setEmail(editeUserDTO.getEmail());
+        userEdite.setPhone(editeUserDTO.getPhone());
+        userEdite.setAddress(editeUserDTO.getAddress());
+        userEdite.setRegion(regionRepository.findById(editeUserDTO.getRegion()).orElseThrow(() -> new RuntimeException("Invalid region")));
+        userEdite.setCountry(countryRepository.findById(editeUserDTO.getCountry()).orElseThrow(() -> new RuntimeException("Invalid country")));
+
+        Users updatedUser = editeUserRepository.save(userEdite);
+        System.out.println("Updated user: " + updatedUser);
+
+        return updatedUser;
+    }
+
 
 }
