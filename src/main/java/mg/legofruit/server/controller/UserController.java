@@ -8,8 +8,10 @@ import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mg.legofruit.server.dto.AuthenticationDTO;
+import mg.legofruit.server.dto.EditeUserDTO;
 import mg.legofruit.server.dto.RegisterDTO;
 import mg.legofruit.server.dto.UserDTO;
+import mg.legofruit.server.entity.Users;
 import mg.legofruit.server.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +61,7 @@ public class UserController {
         userService.activate(token);
     }
 
+
     @GetMapping("isconnected")
     public ResponseEntity<UserDTO> isConnected(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
@@ -82,4 +85,16 @@ public class UserController {
 
         response.addCookie(cookie);
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity updateUserProfile(@PathVariable String id, @Valid @RequestBody EditeUserDTO editeUserDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException("Invalid data: update");
+        }
+        Users updatedUserProfile = userService.updateUser(id, editeUserDTO);
+        return ResponseEntity.ok(updatedUserProfile);
+
+    }
 }
+
+
