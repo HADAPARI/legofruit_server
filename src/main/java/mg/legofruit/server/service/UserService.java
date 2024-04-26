@@ -4,15 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mg.legofruit.server.dto.AuthenticationDTO;
 import mg.legofruit.server.dto.RegisterDTO;
+import mg.legofruit.server.dto.UserDTO;
 import mg.legofruit.server.entity.Users;
 import mg.legofruit.server.mapper.RegisterDTOMapper;
+import mg.legofruit.server.mapper.UserDTOMapper;
 import mg.legofruit.server.repository.UserRepository;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
@@ -34,6 +38,7 @@ public class UserService {
     private JWTService jwtService;
     private AuthenticationManager authenticationManager;
     private ResourceLoader resourceLoader;
+    private UserDTOMapper userDTOMapper;
 
     public void signup(RegisterDTO registerDTO) {
         Optional<Users> userOptional = userRepository.findByEmail(registerDTO.getEmail());
@@ -82,12 +87,35 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public String signin(AuthenticationDTO authenticationDTO) {
-        authenticationManager.authenticate(
+    public Object[] signin(AuthenticationDTO authenticationDTO) {
+        Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authenticationDTO.getEmail(), authenticationDTO.getPassword())
         );
 
-        return jwtService.generate(authenticationDTO.getEmail(), 24);
+        Optional<Users> users = userRepository.findByEmail(authenticationDTO.getEmail());
+
+        if (users.isEmpty()) {
+            throw new IllegalStateException("Authent error");
+        }
+
+        UserDTO userDTO = userDTOMapper.apply(users.get());
+
+        String token = jwtService.generate(authenticationDTO.getEmail(), 24);
+        return new Object[]{token, userDTO};
     }
 
+    public ResponseEntity<UserDTO> isConnected(String token) {
+        if (token == null){
+            return null;
+        }else {
+            String userId = jwtService.decode(token);
+            Optional<Users> userOptional = userRepository.findByEmail(userId);
+            if (userOptional.isEmpty()) {
+                return null;
+            }
+            UserDTO userDTO = userDTOMapper.apply(userOptional.get());
+
+            return ResponseEntity.ok(userDTO);
+        }
+    }
 }
