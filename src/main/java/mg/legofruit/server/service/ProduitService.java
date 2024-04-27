@@ -1,6 +1,7 @@
 package mg.legofruit.server.service;
 
 import lombok.AllArgsConstructor;
+import mg.legofruit.server.ProduitSpecification.ProduitSpecification;
 import mg.legofruit.server.dto.ProduitDTO;
 import mg.legofruit.server.entity.Produit;
 import mg.legofruit.server.entity.Users;
@@ -9,12 +10,14 @@ import mg.legofruit.server.repository.ProduitRepository;
 import mg.legofruit.server.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -50,4 +53,10 @@ public class ProduitService {
 
         return produitDTOMapper.toDTO(savedProduit);
     }
-}
+    public List<Produit> findAllProduct(String name, String category) {
+        final Specification<Produit> specification =
+                ProduitSpecification.filterProduct(category, name);
+        final List<Produit> product = produitRepository.findAll(specification);
+        return product;
+    }
+ }
