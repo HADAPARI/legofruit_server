@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -125,7 +124,7 @@ public class UserService {
             return ResponseEntity.ok(userDTO);
         }
     }
-    public Users updateUser(String id, EditeUserDTO editeUserDTO){
+    public Users updateUser(String id, EditeUserDTO editeUserDTO) {
         System.out.println("Updating user with ID: " + id);
 
 
@@ -149,5 +148,10 @@ public class UserService {
         System.out.println("Updated user: " + updatedUser);
 
         return updatedUser;
+    }
+    public UserDTO getUserProfile(String userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userDTOMapper.apply(user);
     }
 }
