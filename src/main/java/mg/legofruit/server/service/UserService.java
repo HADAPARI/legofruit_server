@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mg.legofruit.server.dto.AuthenticationDTO;
 import mg.legofruit.server.dto.RegisterDTO;
+import mg.legofruit.server.dto.UserDTO;
 import mg.legofruit.server.entity.Users;
 import mg.legofruit.server.mapper.RegisterDTOMapper;
+import mg.legofruit.server.mapper.UserDTOMapper;
 import mg.legofruit.server.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ public class UserService {
     private MailService mailService;
     private JWTService jwtService;
     private AuthenticationManager authenticationManager;
+    private UserDTOMapper userDTOMapper;
 
     public void signup(RegisterDTO registerDTO) {
         Optional<Users> userOptional = userRepository.findByEmail(registerDTO.getEmail());
@@ -56,4 +58,9 @@ public class UserService {
         return jwtService.generate(authenticationDTO.getEmail(), 24);
     }
 
+    public UserDTO getUserProfile(String userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userDTOMapper.apply(user);
+    }
 }

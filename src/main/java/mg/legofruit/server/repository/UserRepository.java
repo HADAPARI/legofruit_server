@@ -1,5 +1,6 @@
 package mg.legofruit.server.repository;
 
+import mg.legofruit.server.dto.UserDTO;
 import mg.legofruit.server.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 

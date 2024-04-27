@@ -7,8 +7,11 @@ import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import mg.legofruit.server.dto.AuthenticationDTO;
 import mg.legofruit.server.dto.RegisterDTO;
+import mg.legofruit.server.dto.UserDTO;
+import mg.legofruit.server.repository.UserRepository;
 import mg.legofruit.server.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,4 +48,9 @@ public class UserController {
         response.addCookie(cookie);
     }
 
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<UserDTO> getUserProfile(@PathVariable String userId) {
+        UserDTO userProfile = userService.getUserProfile(userId);
+        return ResponseEntity.ok(userProfile);
+    }
 }
