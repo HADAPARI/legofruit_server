@@ -149,9 +149,13 @@ public class UserService {
 
         return updatedUser;
     }
-    public UserDTO getUserProfile(String userId) {
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return userDTOMapper.apply(user);
+    public UserDTO getUserProfile(String token) {
+        if (token == null){
+            return null;
+        }else {
+            String userId = jwtService.decode(token);
+            Optional<Users> userOptional = userRepository.findByEmail(userId);
+            return userOptional.map(users -> userDTOMapper.apply(users)).orElse(null);
+        }
     }
 }
