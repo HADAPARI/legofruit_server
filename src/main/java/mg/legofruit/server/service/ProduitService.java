@@ -2,6 +2,7 @@ package mg.legofruit.server.service;
 
 import lombok.AllArgsConstructor;
 import mg.legofruit.server.ProduitSpecification.ProduitSpecification;
+import mg.legofruit.server.dto.AchatDTO;
 import mg.legofruit.server.dto.ProduitDTO;
 import mg.legofruit.server.entity.Produit;
 import mg.legofruit.server.entity.Users;
@@ -26,6 +27,7 @@ public class ProduitService {
     private final ProduitRepository produitRepository;
     private final ProduitDTOMapper produitDTOMapper;
     private final UserRepository userRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(ProduitService.class);
 
     public ProduitDTO addNewProduct(ProduitDTO produitDTO, String userId) {
@@ -59,4 +61,9 @@ public class ProduitService {
         final List<Produit> product = produitRepository.findAll(specification);
         return product;
     }
+
+    public List<Produit> getAllProduit(){
+        return produitRepository.findAll();
+    }
+
  }

@@ -5,6 +5,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import mg.legofruit.server.entity.Users;
 
 import java.text.ParseException;
@@ -16,6 +17,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class ProduitDTO {
     private Long id;
@@ -28,7 +30,7 @@ public class ProduitDTO {
     private String image;
     private LocalDate datepublication ;
 
-    public ProduitDTO() {
+   //public ProduitDTO() {
 
-    }
+    //}
 }
