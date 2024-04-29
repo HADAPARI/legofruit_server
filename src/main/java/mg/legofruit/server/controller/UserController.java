@@ -94,9 +94,19 @@ public class UserController {
         Users updatedUserProfile = userService.updateUser(id, editeUserDTO);
         return ResponseEntity.ok(updatedUserProfile);
     }
-    @GetMapping("/profile/{userId}")
-    public ResponseEntity<UserDTO> getUserProfile(@PathVariable String userId) {
-        UserDTO userProfile = userService.getUserProfile(userId);
+    @GetMapping("/profile")
+    public ResponseEntity<UserDTO> getUserProfile(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("at".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
+        }
+
+        UserDTO userProfile = userService.getUserProfile(token);
         return ResponseEntity.ok(userProfile);
     }
 }
