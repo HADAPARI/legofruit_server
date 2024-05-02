@@ -2,17 +2,14 @@ package mg.legofruit.server.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mg.legofruit.server.dto.AuthenticationDTO;
-import mg.legofruit.server.dto.EditeUserDTO;
-import mg.legofruit.server.dto.RegisterDTO;
-import mg.legofruit.server.dto.UserDTO;
+import mg.legofruit.server.dto.*;
+import mg.legofruit.server.entity.Category;
+import mg.legofruit.server.entity.Subscription;
 import mg.legofruit.server.entity.Users;
 import mg.legofruit.server.mapper.RegisterDTOMapper;
+import mg.legofruit.server.mapper.SubscriptionDTOMapper;
 import mg.legofruit.server.mapper.UserDTOMapper;
-import mg.legofruit.server.repository.CountryRepository;
-import mg.legofruit.server.repository.EditeUserRepository;
-import mg.legofruit.server.repository.RegionRepository;
-import mg.legofruit.server.repository.UserRepository;
+import mg.legofruit.server.repository.*;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -46,6 +43,9 @@ public class UserService {
     private EditeUserRepository editeUserRepository;
     private RegionRepository regionRepository;
     private CountryRepository countryRepository;
+    private CategoryRepository categoryRepository;
+    private SubscriptionDTOMapper subscriptionDTOMapper;
+    private SubscriptionRepository subscriptionRepository;
 
     public void signup(RegisterDTO registerDTO) {
         Optional<Users> userOptional = userRepository.findByEmail(registerDTO.getEmail());
@@ -158,4 +158,15 @@ public class UserService {
             return userOptional.map(users -> userDTOMapper.apply(users)).orElse(null);
         }
     }
+
+    public Users subscribeToCategory (String token, CategoryDTO categoryDTO) {
+        String userEmail = jwtService.decode(token);
+        Users user = userRepository.findByEmail(userEmail).orElseThrow(() -> new RuntimeException("User not found"));
+        Subscription subscription = subscriptionDTOMapper.apply(categoryDTO);
+        subscriptionRepository.save(subscription);
+        user.setSubscription(subscription);
+        return userRepository.save(user);
+    }
+
+
 }

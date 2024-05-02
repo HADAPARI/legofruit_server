@@ -7,10 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mg.legofruit.server.dto.AuthenticationDTO;
-import mg.legofruit.server.dto.EditeUserDTO;
-import mg.legofruit.server.dto.RegisterDTO;
-import mg.legofruit.server.dto.UserDTO;
+import mg.legofruit.server.dto.*;
 import mg.legofruit.server.entity.Users;
 import mg.legofruit.server.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -108,6 +105,23 @@ public class UserController {
 
         UserDTO userProfile = userService.getUserProfile(token);
         return ResponseEntity.ok(userProfile);
+    }
+
+    @PostMapping("/subscribe")
+    public ResponseEntity subscribeUser (@RequestBody CategoryDTO categoryDTO, HttpServletRequest req) {
+        Cookie[] cookies = req.getCookies();
+        log.info("cookies: " + cookies);
+
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("at".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
+        }
+        Users userGetCategory = userService.subscribeToCategory(token, categoryDTO);
+        return ResponseEntity.ok(userGetCategory);
     }
 }
 

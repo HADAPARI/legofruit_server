@@ -58,5 +58,8 @@ public class Users {
     @Column(nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    @OneToOne
+    private Subscription subscription;
+
 
 }
