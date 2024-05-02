@@ -86,12 +86,23 @@ public class UserController {
         response.addCookie(cookie);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity updateUserProfile(@PathVariable String id, @Valid @RequestBody EditeUserDTO editeUserDTO, BindingResult bindingResult) {
+    @PutMapping("/update")
+    public ResponseEntity<UserDTO> updateUserProfile(@Valid @RequestBody EditeUserDTO editeUserDTO, BindingResult bindingResult,HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             throw new ValidationException("Invalid data: update");
         }
-        Users updatedUserProfile = userService.updateUser(id, editeUserDTO);
+
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("at".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
+        }
+
+        UserDTO updatedUserProfile = userService.updateUser(token, editeUserDTO);
         return ResponseEntity.ok(updatedUserProfile);
     }
     @GetMapping("/profile")
@@ -108,6 +119,27 @@ public class UserController {
 
         UserDTO userProfile = userService.getUserProfile(token);
         return ResponseEntity.ok(userProfile);
+    }
+
+    @GetMapping("/delete")
+    public ResponseEntity<?> delete(HttpServletRequest request,HttpServletResponse response){
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("at".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
+        }
+        userService.delete(token);
+
+        Cookie cookie = new Cookie("at", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+        return ResponseEntity.ok().body(null);
     }
 }
 

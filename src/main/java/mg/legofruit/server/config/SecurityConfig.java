@@ -29,9 +29,9 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((auth) ->
                         auth
-                                .requestMatchers("/initialize","/country","/region/*","/user/activate/*","user/isconnected","user/signout","/user/profile").permitAll()
-                                .requestMatchers(HttpMethod.PUT,"/user/update/*").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/user/signup","/user/signin","/produit/ajout/*").permitAll()
+                                .requestMatchers("/initialize","/country","/region/*","/user/activate/*","user/isconnected","user/signout","/user/profile","user/delete","/product/all").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/user/signup","/user/signin","/product/ajout/*").permitAll()
+                                .requestMatchers(HttpMethod.PUT,"/user/update").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();

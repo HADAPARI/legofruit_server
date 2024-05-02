@@ -1,45 +1,42 @@
 package mg.legofruit.server.controller;
 
 import lombok.AllArgsConstructor;
-import mg.legofruit.server.dto.ProduitDTO;
-import mg.legofruit.server.entity.Produit;
-import mg.legofruit.server.entity.Users;
-import mg.legofruit.server.service.ProduitService;
-import org.springframework.beans.factory.annotation.Autowired;
+import mg.legofruit.server.dto.ProductDTO;
+import mg.legofruit.server.entity.Product;
+import mg.legofruit.server.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/produit")
+@RequestMapping("/product")
 @AllArgsConstructor
-public class ProduitController {
+public class ProductController {
 
-    private final ProduitService produitService;
+    private final ProductService productService;
 
 
     @PostMapping("/ajout/{userId}")
-    public ResponseEntity<ProduitDTO> addNewProduct(@PathVariable String userId, @RequestBody ProduitDTO produitDTO) {
-        ProduitDTO newProduit = produitService.addNewProduct(produitDTO, userId);
+    public ResponseEntity<ProductDTO> addNewProduct(@PathVariable String userId, @RequestBody ProductDTO productDTO) {
+        ProductDTO newProduit = productService.addNewProduct(productDTO, userId);
         return new ResponseEntity<>(newProduit, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Produit>> searchProduct(
+    public ResponseEntity<List<Product>> searchProduct(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String category
     ) {
-        return ResponseEntity.ok(produitService.findAllProduct(category, name));
+        return ResponseEntity.ok(productService.findAllProduct(category, name));
     }
 
-    public String getAllProduit(Model model){
-        List<Produit> produit = produitService.getAllProduit();
-        model.addAttribute("produit", produit);
-        return "produit";
+    @GetMapping("/all")
+    public ResponseEntity<List<Product>> getAllProduit(){
+        List<Product> products = productService.getAllProduit();
+        return ResponseEntity.ok().body(products);
     }
 
     @PostMapping("/achatProduit")

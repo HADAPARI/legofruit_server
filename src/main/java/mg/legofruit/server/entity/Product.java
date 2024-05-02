@@ -7,11 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Produit {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,26 +20,35 @@ public class Produit {
 
     @JoinColumn(nullable = false)
     @ManyToOne
-    private Users userid;
+    private Users user;
 
     @Column(nullable = false)
-    private Integer category;
+    private String category;
 
     @Column(nullable = false)
-    private String name;
+    private String type;
 
     @Column(nullable = false)
-    private Double prix;
+    private String title;
+
+    @Column(nullable = false)
+    private Double price;
+
+    @Column(nullable = false)
+    private Integer promotion = 0;
 
     @Column(nullable = false)
     private Double quantity;
 
     @Column(nullable = false)
-    private LocalDate datepublication;
-
-    @Column(nullable = false)
     private String image;
 
     @Column(nullable = false)
-    private LocalDate daterecolte = LocalDate.now();
+    private LocalDate harvest;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt = LocalDateTime.now();
 }
