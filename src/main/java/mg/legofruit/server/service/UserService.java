@@ -72,7 +72,7 @@ public class UserService {
         htmlTemplate = htmlTemplate.replace("{{firstname}}", StringUtils.hasText(user.getFirstname()) ? user.getFirstname() : "");
         htmlTemplate = htmlTemplate.replace("{{token}}", StringUtils.hasText(token) ? token : "");
 
-        mailService.send(user.getEmail(), htmlTemplate , subject);
+        mailService.send(user.getEmail(), htmlTemplate, subject);
     }
 
     public void activate(String token) {
@@ -110,10 +110,11 @@ public class UserService {
         String token = jwtService.generate(authenticationDTO.getEmail(), 24);
         return new Object[]{token, userDTO};
     }
+
     public ResponseEntity<UserDTO> isConnected(String token) {
-        if (token == null){
+        if (token == null) {
             return null;
-        }else {
+        } else {
             String userId = jwtService.decode(token);
             Optional<Users> userOptional = userRepository.findByEmail(userId);
             if (userOptional.isEmpty()) {
@@ -124,43 +125,60 @@ public class UserService {
             return ResponseEntity.ok(userDTO);
         }
     }
-    public Users updateUser(String id, EditeUserDTO editeUserDTO) {
-        System.out.println("Updating user with ID: " + id);
 
-
-        Users userEdite = editeUserRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable avec l’identifiant: " + id));
-
-        System.out.println("Found user: " + userEdite);
-
-
-        System.out.println("New user data: " + editeUserDTO);
-
-        userEdite.setFirstname(editeUserDTO.getFirstname());
-        userEdite.setLastname(editeUserDTO.getLastname());
-        userEdite.setEmail(editeUserDTO.getEmail());
-        userEdite.setPhone(editeUserDTO.getPhone());
-        userEdite.setAddress(editeUserDTO.getAddress());
-        userEdite.setRegion(regionRepository.findById(editeUserDTO.getRegion()).orElseThrow(() -> new RuntimeException("Invalid region")));
-        userEdite.setCountry(countryRepository.findById(editeUserDTO.getCountry()).orElseThrow(() -> new RuntimeException("Invalid country")));
-
-        Users updatedUser = editeUserRepository.save(userEdite);
-        System.out.println("Updated user: " + updatedUser);
-
-        return updatedUser;
-    }
-    public UserDTO getUserProfile(String token) {
-        if (token == null){
+    public UserDTO updateUser(String token, EditeUserDTO editeUserDTO) {
+        if (token == null) {
             return null;
-        }else {
+        } else {
+            String userId = jwtService.decode(token);
+            Optional<Users> userOptional = userRepository.findByEmail(userId);
+            if (userOptional.isEmpty()) {
+                return null;
+            }
+
+            Users user = userOptional.get();
+
+            user.setFirstname(editeUserDTO.getFirstname());
+            user.setLastname(editeUserDTO.getLastname());
+            user.setEmail(editeUserDTO.getEmail());
+            user.setPhone(editeUserDTO.getPhone());
+            user.setAddress(editeUserDTO.getAddress());
+            user.setRegion(regionRepository.findById(editeUserDTO.getRegion()).orElseThrow(() -> new RuntimeException("Invalid region")));
+            user.setCountry(countryRepository.findById(editeUserDTO.getCountry()).orElseThrow(() -> new RuntimeException("Invalid country")));
+
+            userRepository.save(user);
+
+            return userDTOMapper.apply(user);
+        }
+    }
+
+    public UserDTO getUserProfile(String token) {
+        if (token == null) {
+            return null;
+        } else {
             String userId = jwtService.decode(token);
             Optional<Users> userOptional = userRepository.findByEmail(userId);
             return userOptional.map(users -> userDTOMapper.apply(users)).orElse(null);
         }
     }
+
     public Users getUserById(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found for id: " + userId));
     }
 
+    public void delete(String token) {
+        if (token != null) {
+            String userId = jwtService.decode(token);
+            Optional<Users> userOptional = userRepository.findByEmail(userId);
+            if (userOptional.isEmpty()) {
+                throw new DataIntegrityViolationException("Invalid link");
+            }
+
+            Users user = userOptional.get();
+            user.setActive(false);
+
+            userRepository.save(user);
+        }
+    }
 }
