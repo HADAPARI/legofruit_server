@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -58,5 +60,7 @@ public class Users {
     @Column(nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    @OneToMany(mappedBy = "reviewed")
+    private List<ProfileReview> reviewsReceived = new ArrayList<>();
 
 }

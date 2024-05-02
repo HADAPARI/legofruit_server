@@ -154,4 +154,9 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return userDTOMapper.apply(user);
     }
+    public Users getUserById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found for id: " + userId));
+    }
+
 }
