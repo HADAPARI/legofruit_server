@@ -158,4 +158,9 @@ public class UserService {
             return userOptional.map(users -> userDTOMapper.apply(users)).orElse(null);
         }
     }
+    public Users getUserById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found for id: " + userId));
+    }
+
 }
