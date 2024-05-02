@@ -63,4 +63,8 @@ public class Users {
     @OneToMany(mappedBy = "reviewed")
     private List<ProfileReview> reviewsReceived = new ArrayList<>();
 
+    @OneToOne
+    private Subscription subscription;
+
+
 }

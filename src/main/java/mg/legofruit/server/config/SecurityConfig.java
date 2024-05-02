@@ -30,8 +30,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) ->
                         auth
                                 .requestMatchers("/initialize", "/country", "/region/*", "/user/activate/*", "user/isconnected", "user/signout", "/user/profile", "user/delete", "/product/all", "review/average-ratings/*", "review/comment/*").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/user/signup", "/user/signin", "/product/ajout/*", "/review/{userId}/reviews").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/user/signup", "/user/signin", "/product/ajout/*", "/review/{userId}/reviews", "/user/subscribe").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "/user/update").permitAll()
+
                                 .anyRequest().authenticated()
                 );
         return http.build();
