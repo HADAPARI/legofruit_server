@@ -1,5 +1,7 @@
 package mg.legofruit.server.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import mg.legofruit.server.dto.ProductDTO;
 import mg.legofruit.server.entity.Product;
@@ -19,9 +21,19 @@ public class ProductController {
     private final ProductService productService;
 
 
-    @PostMapping("/ajout/{userId}")
-    public ResponseEntity<ProductDTO> addNewProduct(@PathVariable String userId, @RequestBody ProductDTO productDTO) {
-        ProductDTO newProduit = productService.addNewProduct(productDTO, userId);
+    @PostMapping("/add")
+    public ResponseEntity<ProductDTO> addNewProduct(HttpServletRequest request, @RequestBody ProductDTO productDTO) {
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("at".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
+        }
+
+        ProductDTO newProduit = productService.addNewProduct(productDTO, token);
         return new ResponseEntity<>(newProduit, HttpStatus.CREATED);
     }
 
@@ -53,5 +65,20 @@ public class ProductController {
 
         }
         return "redirect:/Basket";
+    }
+
+    @GetMapping("/ismine/{id}")
+    public Boolean isMine(@PathVariable Long id, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("at".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
+        }
+
+        return productService.isMine(id, token);
     }
 }

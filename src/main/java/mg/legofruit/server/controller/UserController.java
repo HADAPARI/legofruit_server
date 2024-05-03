@@ -87,7 +87,7 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<UserDTO> updateUserProfile(@Valid @RequestBody EditeUserDTO editeUserDTO, BindingResult bindingResult,HttpServletRequest request) {
+    public ResponseEntity<UserDTO> updateUserProfile(@Valid @RequestBody EditeUserDTO editeUserDTO, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             throw new ValidationException("Invalid data: update");
         }
@@ -105,6 +105,7 @@ public class UserController {
         UserDTO updatedUserProfile = userService.updateUser(token, editeUserDTO);
         return ResponseEntity.ok(updatedUserProfile);
     }
+
     @GetMapping("/profile")
     public ResponseEntity<UserDTO> getUserProfile(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
@@ -122,7 +123,7 @@ public class UserController {
     }
 
     @GetMapping("/delete")
-    public ResponseEntity<?> delete(HttpServletRequest request,HttpServletResponse response){
+    public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         String token = null;
         if (cookies != null) {

@@ -30,8 +30,7 @@ public class Users {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String avatar;
+    private String avatar = null;
 
     @Column(nullable = false, unique = true)
     private String phone;
