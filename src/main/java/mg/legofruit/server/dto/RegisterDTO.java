@@ -18,8 +18,7 @@ public class RegisterDTO {
     private String lastname;
     @Email
     private String email;
-    @NotBlank
-    private String avatar;
+    private String avatar = null;
     @NotBlank
     @Size(min = 9, max = 20)
     private String phone;
