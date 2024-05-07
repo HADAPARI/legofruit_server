@@ -29,8 +29,8 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((auth) ->
                         auth
-                                .requestMatchers("/initialize", "/country", "/region/*", "/user/activate/*", "user/isconnected", "user/signout", "/user/profile", "user/delete", "/product/all","/product/ismine/*", "review/average-ratings/*", "review/comment/*").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/user/signup", "/user/signin", "/product/ajout/*", "/review/{userId}/reviews", "/user/subscribe", "order/makeorder", "purchase/buy").permitAll()
+                                .requestMatchers("/initialize", "/country", "/region/*", "/user/activate/*", "user/isconnected", "user/signout", "/user/profile", "user/delete", "/product/all","/product/ismine/*", "review/average-ratings/*", "review/comment/*","notifications/user").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/user/signup", "/user/signin", "/product/add/*", "/review/{userId}/reviews", "/user/subscribe", "order/makeorder", "purchase/buy","/notifications/send").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "/user/update").permitAll()
                                 .anyRequest().authenticated()
                 );
